@@ -280,25 +280,27 @@
 Note the API token listed here is public.  You can use it or request a unique token at no cost by emailing dev@miicloud.io
 </aside>
 <h1 id='persons'>Persons</h1><h2 id='enroll-a-person'>Enroll a Person</h2><pre class="highlight python tab-python"><code><span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">os</span>
 
 <span class="n">auth_token</span> <span class="o">=</span> <span class="s">'Token 0e653da4969a757d21de0ffa6387d5fbd6401131'</span>
+<span class="n">image_path</span> <span class="o">=</span> <span class="s">'input/persons/image_001.jpg'</span>
+<span class="n">enroll_endpoint</span> <span class="o">=</span> <span class="s">'http://sandbox.miicloud.io/miicloud/enroll'</span>
 <span class="n">enrollment_payload</span> <span class="o">=</span> 
 <span class="p">{</span> 
     <span class="s">'customer_person_id'</span><span class="p">:</span> <span class="s">'1234567'</span><span class="p">,</span> 
-    <span class="s">'image_path'</span><span class="p">:</span> <span class="s">'usr/local/app/data/image0001.jpg'</span><span class="p">,</span> 
     <span class="s">'first_name'</span><span class="p">:</span> <span class="s">'John'</span><span class="p">,</span> 
     <span class="s">'last_name'</span><span class="p">:</span> <span class="s">'Doe'</span><span class="p">,</span> 
     <span class="s">'email'</span><span class="p">:</span> <span class="s">'test@domain.com'</span><span class="p">,</span> 
     <span class="s">'phone'</span><span class="p">:</span> <span class="s">'0123456789'</span> 
-
 <span class="p">}</span>
-
-<span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">api_endpoint</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s">'Authorization'</span><span class="p">:</span> <span class="n">auth_token</span><span class="p">},</span> <span class="n">json</span> <span class="o">=</span> <span class="n">enrollment_payload</span><span class="p">)</span>
+<span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">image_path</span><span class="p">)</span>
+<span class="nb">file</span> <span class="o">=</span> <span class="p">{</span><span class="s">'image_path'</span><span class="p">:</span> <span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="n">image_path</span><span class="p">,</span> <span class="s">'rb'</span><span class="p">),</span> <span class="s">"multipart/form-data"</span><span class="p">)}</span>
+<span class="n">enroll_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">enroll_endpoint</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s">'Authorization'</span><span class="p">:</span> <span class="n">auth_token</span><span class="p">},</span> <span class="n">data</span> <span class="o">=</span> <span class="n">enrollment_payload</span><span class="p">,</span> <span class="n">files</span> <span class="o">=</span> <span class="nb">file</span><span class="p">)</span>
 </code></pre><pre class="highlight shell tab-shell"><code>curl -X POST <span class="se">\</span>
 api_endpoint <span class="se">\</span>
 -H <span class="s1">'authorization: Token 0e653da4969a757d21de0ffa6387d5fbd6401131'</span> <span class="se">\</span>
 -F <span class="nv">customer_person_id</span><span class="o">=</span>1234567
--F <span class="nv">image_path</span><span class="o">=</span> usr/local/app/data/image0001.jpg <span class="se">\</span>
+-F <span class="nv">image_path</span><span class="o">=</span> input/persons/image_001.jpg <span class="se">\</span>
 -F <span class="nv">first_name</span><span class="o">=</span>John <span class="se">\</span>
 -F <span class="nv">last_name</span><span class="o">=</span>Doe <span class="se">\</span>
 -F <span class="nv">email</span><span class="o">=</span><span class="nb">test</span>@domain.com <span class="se">\</span>
@@ -322,7 +324,7 @@ api_endpoint <span class="se">\</span>
 </span><span class="p">}</span><span class="w">
 
 </span></code></pre><h3 id='sandbox-api-endpoint'>Sandbox API Endpoint</h3>
-<p><code>POST http://3.92.92.102/miicloud/enroll</code></p>
+<p><code>POST http://sandbox.miicloud.io/miicloud/enroll</code></p>
 <h3 id='production-api-endpoint'>Production API Endpoint</h3>
 <p><code>Please contact dev@miicloud.io</code></p>
 <h3 id='request-parameters'>Request Parameters</h3>
@@ -419,14 +421,18 @@ api_endpoint <span class="se">\</span>
 </tr>
 </tbody></table>
 <h2 id='find-matching-faces'>Find Matching Faces</h2><pre class="highlight python tab-python"><code><span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">os</span>
 
 <span class="n">auth_token</span> <span class="o">=</span> <span class="s">'Token 0e653da4969a757d21de0ffa6387d5fbd6401131'</span>
-<span class="n">match_faces_payload</span> <span class="o">=</span> 
-<span class="p">{</span> 
-    <span class="s">'image_path'</span><span class="p">:</span> <span class="s">'usr/local/app/data/test_img_0001.jpg'</span><span class="p">,</span> 
-<span class="p">}</span>
+<span class="n">image_path</span> <span class="o">=</span> <span class="s">'input/test_images/test_img_001.jpg'</span>
+<span class="n">math_faces_endpoint</span> <span class="o">=</span> <span class="s">'http://sandbox.miicloud.io/miicloud/match_faces'</span>
 
-<span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">api_endpoint</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s">'Authorization'</span><span class="p">:</span> <span class="n">auth_token</span><span class="p">},</span> <span class="n">json</span> <span class="o">=</span> <span class="n">enrollment_payload</span><span class="p">)</span>
+<span class="n">match_faces_payload</span> <span class="o">=</span> <span class="p">{</span><span class="s">'image_path'</span><span class="p">:</span> <span class="n">image_path</span><span class="p">}</span>
+<span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">image_path</span><span class="p">)</span>
+<span class="nb">file</span> <span class="o">=</span> <span class="p">{</span><span class="s">'image_path'</span><span class="p">:</span> <span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="n">image_path</span><span class="p">,</span> <span class="s">'rb'</span><span class="p">),</span> <span class="s">"multipart/form-data"</span><span class="p">)}</span>
+
+<span class="n">match_faces_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">match_faces_endpoint</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s">'Authorization'</span><span class="p">:</span> <span class="n">auth_token</span><span class="p">},</span> <span class="n">data</span> <span class="o">=</span> <span class="n">match_faces_payload</span><span class="p">,</span> <span class="n">files</span> <span class="o">=</span> <span class="nb">file</span><span class="p">)</span>
+
 </code></pre><pre class="highlight shell tab-shell"><code>curl -X POST <span class="se">\</span>
   api_endpoint <span class="se">\</span>
   -H <span class="s1">'authorization: Token 0e653da4969a757d21de0ffa6387d5fbd6401131'</span> <span class="se">\</span>
@@ -456,7 +462,7 @@ api_endpoint <span class="se">\</span>
 </span></code></pre>
 <p>Matches the faces in a given image against the faces in the database for one or more matches.  </p>
 <h3 id='sandbox-api-endpoint-2'>Sandbox API Endpoint</h3>
-<p><code>POST http://3.92.92.102/miicloud/match_faces</code></p>
+<p><code>POST http://sandbox.miicloud.io/miicloud/match_faces</code></p>
 <h3 id='production-api-endpoint-2'>Production API Endpoint</h3>
 <p><code>Please contact dev@miicloud.io</code></p>
 <h3 id='request-parameters-2'>Request Parameters</h3>
@@ -489,7 +495,7 @@ api_endpoint <span class="se">\</span>
 <tr>
 <td>status</td>
 <td>Yes</td>
-<td>response by API whether it was successful or not</td>
+<td>&quot;success&quot; if at least 1 face was matched, else &quot;fail&quot;</td>
 </tr>
 <tr>
 <td>faces</td>
