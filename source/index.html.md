@@ -11,6 +11,7 @@ toc_footers:
 
 includes:
   - errors
+  
 
 search: true
 ---
@@ -60,20 +61,22 @@ Note the API token listed here is public.  You can use it or request a unique to
 ## Enroll a Person
 ```python
 import requests
+import os
 
 auth_token = 'Token 0e653da4969a757d21de0ffa6387d5fbd6401131'
+image_path = 'input/persons/image_001.jpg'
+enroll_endpoint = 'http://sandbox.miicloud.io/miicloud/enroll'
 enrollment_payload = 
 { 
     'customer_person_id': '1234567', 
-    'image_path': 'usr/local/app/data/image0001.jpg', 
     'first_name': 'John', 
     'last_name': 'Doe', 
     'email': 'test@domain.com', 
     'phone': '0123456789' 
-    
 }
-
-requests.post(api_endpoint, headers={'Authorization': auth_token}, json = enrollment_payload)
+filename = os.path.basename(image_path)
+file = {'image_path': (filename, open(image_path, 'rb'), "multipart/form-data")}
+enroll_response = requests.post(enroll_endpoint, headers={'Authorization': auth_token}, data = enrollment_payload, files = file)
 ```
 
 ```shell
@@ -81,7 +84,7 @@ curl -X POST \
 api_endpoint \
 -H 'authorization: Token 0e653da4969a757d21de0ffa6387d5fbd6401131' \
 -F customer_person_id=1234567
--F image_path= usr/local/app/data/image0001.jpg \
+-F image_path= input/persons/image_001.jpg \
 -F first_name=John \
 -F last_name=Doe \
 -F email=test@domain.com \
@@ -108,7 +111,7 @@ Identifies the largest face in a given image and adds it to the database.  If a 
 ```
 
 ### Sandbox API Endpoint
-`POST http://3.92.92.102/miicloud/enroll`
+`POST http://sandbox.miicloud.io/miicloud/enroll`
 ### Production API Endpoint
 `Please contact dev@miicloud.io`
 
@@ -144,14 +147,18 @@ customer_person_id | No | a unique identified maintained by the customer per per
 
 ```python
 import requests
+import os
 
 auth_token = 'Token 0e653da4969a757d21de0ffa6387d5fbd6401131'
-match_faces_payload = 
-{ 
-    'image_path': 'usr/local/app/data/test_img_0001.jpg', 
-}
+image_path = 'input/test_images/test_img_001.jpg'
+math_faces_endpoint = 'http://sandbox.miicloud.io/miicloud/match_faces'
 
-requests.post(api_endpoint, headers={'Authorization': auth_token}, json = enrollment_payload)
+match_faces_payload = {'image_path': image_path}
+filename = os.path.basename(image_path)
+file = {'image_path': (filename, open(image_path, 'rb'), "multipart/form-data")}
+
+match_faces_response = requests.post(match_faces_endpoint, headers={'Authorization': auth_token}, data = match_faces_payload, files = file)
+
 ```
 
 ```shell  
@@ -186,7 +193,7 @@ curl -X POST \
 Matches the faces in a given image against the faces in the database for one or more matches.  
 
 ### Sandbox API Endpoint
-`POST http://3.92.92.102/miicloud/match_faces`
+`POST http://sandbox.miicloud.io/miicloud/match_faces`
 
 ### Production API Endpoint
 `Please contact dev@miicloud.io`
@@ -203,7 +210,7 @@ image_path | Yes | local or remote destination of the image accessible by your a
 
 Field | Required | Description
 --------- | ------- | -----------
-status | Yes | response by API whether it was successful or not
+status | Yes | "success" if at least 1 face was matched, else "fail"
 faces | No | returns an array if 1 or more faces is found in the image
 match_status | No | if the face(s) in the image matche with 1 or more known person(s) in the database; values are: "known" or "uknown"
 bounding_box | No | an object with bounding box coordinates around the face
