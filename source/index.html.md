@@ -11,6 +11,7 @@ toc_footers:
 
 includes:
   - errors
+  - sample_code
   
 
 search: true
@@ -220,4 +221,129 @@ right_x | No | x-coordinate of the bounding box’s bottom right corner
 right_y | No | y-coordinate of the bounding box’s bottom right corner
 person_id | No | unique identifier stored in miiCloud per person.  This identifier links the identity in the customer’s system to miiCloud.
 customer_person_id | No | a unique identified maintained by the customer per person enrolled in the database.  miiCloud returns this identifier in the response to allow the customer to validate correct identities were linked
+
+
+
+## Get Person
+```python
+import requests
+
+auth_token = 'Token 0e653da4969a757d21de0ffa6387d5fbd6401131'
+api_endpoint = 'http://sandbox.miicloud.io/miicloud/get_person
+
+payload = {'customer_person_id': '1234567'}
+
+response = requests.get(api_endpoint, headers={'Authorization': auth_token}, data = payload)
+
+```
+
+```shell  
+curl -X GET \
+api_endpoint \
+-H 'authorization: Token 0e653da4969a757d21de0ffa6387d5fbd6401131' \
+-F customer_person_id=1234567
+
+```
+> The above request returns a JSON object structured as follows:
+
+```json
+{
+    "status": "success",
+    "customer_person_id": "1234567",
+    "person_id": "3a298260-6986-41d4-972e-6f0910293362",
+    "first_name": "John",
+    "last_name": "Doe",
+    "email": "test@domain.com"
+    "phone": "0123456789"
+    "images": [
+        {
+            "file": "filename"
+        }
+    ]
+}
+
+```
+
+Returns all the profile info associated with the person, such as their name, email, and the images used to enroll their identinty.  
+
+### Sandbox API Endpoint
+`POST http://sandbox.miicloud.io/miicloud/get_person`
+
+### Production API Endpoint
+`Please contact dev@miicloud.io`
+
+
+### Request Parameters
+
+Parameter | Required | Description
+--------- | ------- | -----------
+authorization | Yes | a unique api token per miiCloud customer
+customer_person_id | Yes | a unique identified maintained by the customer per person enrolled in the database
+
+### Response
+
+Field | Required | Description
+--------- | ------- | -----------
+status | Yes | "success" if a person with the given "customer_person_id" is found, otherwise "fail"
+customer_person_id | No | a unique identified maintained by the customer per person enrolled in the database
+person_id | No | unique identifier stored in miiCloud per person
+first_name | No | first name associated with the person being added to database
+last_name | No | last name associated with the person being added to database
+email | No | email associated with the person being added to database
+phone | No | phone # associated with the person being added to database
+images | No | array of images
+file | No | image file 
+
+## Delete Person
+```python
+import requests
+
+auth_token = 'Token 0e653da4969a757d21de0ffa6387d5fbd6401131'
+api_endpoint = 'http://sandbox.miicloud.io/miicloud/delete_person
+
+payload = {'customer_person_id': '1234567'}
+
+response = requests.post(api_endpoint, headers={'Authorization': auth_token}, data = payload)
+
+```
+
+```shell  
+curl -X POST \
+api_endpoint \
+-H 'authorization: Token 0e653da4969a757d21de0ffa6387d5fbd6401131' \
+-F customer_person_id=1234567
+
+```
+> The above request returns a JSON object structured as follows:
+
+```json
+{
+    "status": "success",
+    "customer_person_id": "1234567",
+}
+
+```
+
+Deletes all info of the person.
+
+### Sandbox API Endpoint
+`POST http://sandbox.miicloud.io/miicloud/delete_person`
+
+### Production API Endpoint
+`Please contact dev@miicloud.io`
+
+
+### Request Parameters
+
+Parameter | Required | Description
+--------- | ------- | -----------
+authorization | Yes | a unique api token per miiCloud customer
+customer_person_id | Yes | a unique identified maintained by the customer per person enrolled in the database
+
+### Response
+
+Field | Required | Description
+--------- | ------- | -----------
+status | Yes | "success" if a person with the given "customer_person_id" is found and deleted, otherwise "fail"
+customer_person_id | No | a unique identified maintained by the customer per person enrolled in the database
 
