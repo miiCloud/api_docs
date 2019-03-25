@@ -234,10 +234,24 @@
                   <li>
                     <a href="#find-matching-faces" class="toc-h2 toc-link" data-title="Find Matching Faces">Find Matching Faces</a>
                   </li>
+                  <li>
+                    <a href="#get-person" class="toc-h2 toc-link" data-title="Get Person">Get Person</a>
+                  </li>
+                  <li>
+                    <a href="#delete-person" class="toc-h2 toc-link" data-title="Delete Person">Delete Person</a>
+                  </li>
               </ul>
           </li>
           <li>
             <a href="#errors" class="toc-h1 toc-link" data-title="Errors">Errors</a>
+          </li>
+          <li>
+            <a href="#sample-code" class="toc-h1 toc-link" data-title="Sample Code">Sample Code</a>
+              <ul class="toc-list-h2">
+                  <li>
+                    <a href="#clone-the-repo" class="toc-h2 toc-link" data-title="Clone the repo">Clone the repo</a>
+                  </li>
+              </ul>
           </li>
       </ul>
         <ul class="toc-footer">
@@ -543,6 +557,185 @@ api_endpoint <span class="se">\</span>
 <td>a unique identified maintained by the customer per person enrolled in the database.  miiCloud returns this identifier in the response to allow the customer to validate correct identities were linked</td>
 </tr>
 </tbody></table>
+<h2 id='get-person'>Get Person</h2><pre class="highlight python tab-python"><code><span class="kn">import</span> <span class="nn">requests</span>
+
+<span class="n">auth_token</span> <span class="o">=</span> <span class="s">'Token 0e653da4969a757d21de0ffa6387d5fbd6401131'</span>
+<span class="n">api_endpoint</span> <span class="o">=</span> <span class="s">'http://sandbox.miicloud.io/miicloud/get_person</span><span class="err">
+
+</span><span class="s">payload = {'</span><span class="n">customer_person_id</span><span class="s">': '</span><span class="mi">1234567</span><span class="s">'}</span><span class="err">
+
+</span><span class="s">response = requests.get(api_endpoint, headers={'</span><span class="n">Authorization</span><span class="s">': auth_token}, data = payload)</span><span class="err">
+
+</span></code></pre><pre class="highlight shell tab-shell"><code>curl -X GET <span class="se">\</span>
+api_endpoint <span class="se">\</span>
+-H <span class="s1">'authorization: Token 0e653da4969a757d21de0ffa6387d5fbd6401131'</span> <span class="se">\</span>
+-F <span class="nv">customer_person_id</span><span class="o">=</span>1234567
+
+</code></pre>
+<blockquote>
+<p>The above request returns a JSON object structured as follows:</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+    </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"success"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"customer_person_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1234567"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"person_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"3a298260-6986-41d4-972e-6f0910293362"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"first_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"John"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"last_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Doe"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"test@domain.com"</span><span class="w">
+    </span><span class="s2">"phone"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0123456789"</span><span class="w">
+    </span><span class="s2">"images"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+        </span><span class="p">{</span><span class="w">
+            </span><span class="s2">"file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"filename"</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+    </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span></code></pre>
+<p>Returns all the profile info associated with the person, such as their name, email, and the images used to enroll their identinty.  </p>
+<h3 id='sandbox-api-endpoint-3'>Sandbox API Endpoint</h3>
+<p><code>POST http://sandbox.miicloud.io/miicloud/get_person</code></p>
+<h3 id='production-api-endpoint-3'>Production API Endpoint</h3>
+<p><code>Please contact dev@miicloud.io</code></p>
+<h3 id='request-parameters-3'>Request Parameters</h3>
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>authorization</td>
+<td>Yes</td>
+<td>a unique api token per miiCloud customer</td>
+</tr>
+<tr>
+<td>customer_person_id</td>
+<td>Yes</td>
+<td>a unique identified maintained by the customer per person enrolled in the database</td>
+</tr>
+</tbody></table>
+<h3 id='response-3'>Response</h3>
+<table><thead>
+<tr>
+<th>Field</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>status</td>
+<td>Yes</td>
+<td>&quot;success&quot; if a person with the given &quot;customer_person_id&quot; is found, otherwise &quot;fail&quot;</td>
+</tr>
+<tr>
+<td>customer_person_id</td>
+<td>No</td>
+<td>a unique identified maintained by the customer per person enrolled in the database</td>
+</tr>
+<tr>
+<td>person_id</td>
+<td>No</td>
+<td>unique identifier stored in miiCloud per person</td>
+</tr>
+<tr>
+<td>first_name</td>
+<td>No</td>
+<td>first name associated with the person being added to database</td>
+</tr>
+<tr>
+<td>last_name</td>
+<td>No</td>
+<td>last name associated with the person being added to database</td>
+</tr>
+<tr>
+<td>email</td>
+<td>No</td>
+<td>email associated with the person being added to database</td>
+</tr>
+<tr>
+<td>phone</td>
+<td>No</td>
+<td>phone # associated with the person being added to database</td>
+</tr>
+<tr>
+<td>images</td>
+<td>No</td>
+<td>array of images</td>
+</tr>
+<tr>
+<td>file</td>
+<td>No</td>
+<td>image file</td>
+</tr>
+</tbody></table>
+<h2 id='delete-person'>Delete Person</h2><pre class="highlight python tab-python"><code><span class="kn">import</span> <span class="nn">requests</span>
+
+<span class="n">auth_token</span> <span class="o">=</span> <span class="s">'Token 0e653da4969a757d21de0ffa6387d5fbd6401131'</span>
+<span class="n">api_endpoint</span> <span class="o">=</span> <span class="s">'http://sandbox.miicloud.io/miicloud/delete_person</span><span class="err">
+
+</span><span class="s">payload = {'</span><span class="n">customer_person_id</span><span class="s">': '</span><span class="mi">1234567</span><span class="s">'}</span><span class="err">
+
+</span><span class="s">response = requests.post(api_endpoint, headers={'</span><span class="n">Authorization</span><span class="s">': auth_token}, data = payload)</span><span class="err">
+
+</span></code></pre><pre class="highlight shell tab-shell"><code>curl -X POST <span class="se">\</span>
+api_endpoint <span class="se">\</span>
+-H <span class="s1">'authorization: Token 0e653da4969a757d21de0ffa6387d5fbd6401131'</span> <span class="se">\</span>
+-F <span class="nv">customer_person_id</span><span class="o">=</span>1234567
+
+</code></pre>
+<blockquote>
+<p>The above request returns a JSON object structured as follows:</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+    </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"success"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"customer_person_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1234567"</span><span class="p">,</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span></code></pre>
+<p>Deletes all info of the person.</p>
+<h3 id='sandbox-api-endpoint-4'>Sandbox API Endpoint</h3>
+<p><code>POST http://sandbox.miicloud.io/miicloud/delete_person</code></p>
+<h3 id='production-api-endpoint-4'>Production API Endpoint</h3>
+<p><code>Please contact dev@miicloud.io</code></p>
+<h3 id='request-parameters-4'>Request Parameters</h3>
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>authorization</td>
+<td>Yes</td>
+<td>a unique api token per miiCloud customer</td>
+</tr>
+<tr>
+<td>customer_person_id</td>
+<td>Yes</td>
+<td>a unique identified maintained by the customer per person enrolled in the database</td>
+</tr>
+</tbody></table>
+<h3 id='response-4'>Response</h3>
+<table><thead>
+<tr>
+<th>Field</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>status</td>
+<td>Yes</td>
+<td>&quot;success&quot; if a person with the given &quot;customer_person_id&quot; is found and deleted, otherwise &quot;fail&quot;</td>
+</tr>
+<tr>
+<td>customer_person_id</td>
+<td>No</td>
+<td>a unique identified maintained by the customer per person enrolled in the database</td>
+</tr>
+</tbody></table>
 <h1 id='errors'>Errors</h1>
 <p>miiCloud API uses the following error codes.  Please contact dev@miicloud.io if you experience any issues.</p>
 
@@ -581,6 +774,13 @@ api_endpoint <span class="se">\</span>
 <td>Unsupported Media Type -- The file format of the image / video is not supported by the API.</td>
 </tr>
 </tbody></table>
+<p>language_tabs:
+- shell</p>
+<h1 id='sample-code'>Sample Code</h1><h3 id='clone-the-repo'>Clone the repo</h3><pre class="highlight shell tab-shell"><code>git clone https://github.com/miiCloud/sandbox_api_test
+</code></pre>
+<p>To facilitate the testing of miiCloud’s API, we have provided sample test files and python code.  It can downloaded from our <a href="https://github.com/miiCloud/sandbox_api_test">public github repo.</a></p>
+
+<p><code>git clone https://github.com/miiCloud/sandbox_api_test</code></p>
 
       </div>
       <div class="dark-box">
