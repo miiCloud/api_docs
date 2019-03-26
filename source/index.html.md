@@ -303,12 +303,12 @@ api_endpoint = 'http://sandbox.miicloud.io/miicloud/delete_person
 
 payload = {'customer_person_id': '1234567'}
 
-response = requests.post(api_endpoint, headers={'Authorization': auth_token}, data = payload)
+response = requests.delete(api_endpoint, headers={'Authorization': auth_token}, data = payload)
 
 ```
 
 ```shell  
-curl -X POST \
+curl -X DELETE \
 api_endpoint \
 -H 'authorization: Token 0e653da4969a757d21de0ffa6387d5fbd6401131' \
 -F customer_person_id=1234567
