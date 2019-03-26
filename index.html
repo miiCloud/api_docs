@@ -676,9 +676,9 @@ api_endpoint <span class="se">\</span>
 
 </span><span class="s">payload = {'</span><span class="n">customer_person_id</span><span class="s">': '</span><span class="mi">1234567</span><span class="s">'}</span><span class="err">
 
-</span><span class="s">response = requests.post(api_endpoint, headers={'</span><span class="n">Authorization</span><span class="s">': auth_token}, data = payload)</span><span class="err">
+</span><span class="s">response = requests.delete(api_endpoint, headers={'</span><span class="n">Authorization</span><span class="s">': auth_token}, data = payload)</span><span class="err">
 
-</span></code></pre><pre class="highlight shell tab-shell"><code>curl -X POST <span class="se">\</span>
+</span></code></pre><pre class="highlight shell tab-shell"><code>curl -X DELETE <span class="se">\</span>
 api_endpoint <span class="se">\</span>
 -H <span class="s1">'authorization: Token 0e653da4969a757d21de0ffa6387d5fbd6401131'</span> <span class="se">\</span>
 -F <span class="nv">customer_person_id</span><span class="o">=</span>1234567
