@@ -11,7 +11,7 @@ toc_footers:
 
 includes:
   - errors
-  - sample_code
+  
   
 
 search: true
@@ -23,9 +23,11 @@ Welcome!
 
 miiCloud is a Computer Vision company that leverages Deep Learning for image and video analysis.  We train and calibrate our models on an extensive data pipeline to bring the best technology to our customers.  
 
-This guide provides an overview of using the miiCloud Application Programming Interface (API), related operations, request and response structures and sample code.  The API is organized around REST and returns JSON encoded responses. The current version of the API is 20190315v02
+This guide provides an overview of using the miiCloud Application Programming Interface (API), related operations, request and response structures.  The API is organized around REST and returns JSON encoded responses. 
 
-We will continue to add new APIs to this site on a weekly basis.  If you have specific requests for your business, please contact us: dev@miicloud.io
+Everything on miiCloud's platform revolves around a "Person" and their identity.  Our goal is to provide the most secure, accurate, fast and user friendly platform to store and verify a person's identity so customers like yourself can build amazing applications for your end users.  The following document describes how to "Enroll" a new Person into miiCloud and the follow-on actions that are available to you. 
+
+We will continue to add new APIs to this site on a regular basis.  If you have specific requests for your business, please contact us: dev@miicloud.io
 
 # Authentication
 
@@ -59,14 +61,14 @@ Note the API token listed here is public.  You can use it or request a unique to
 
 # Persons
 
-## Enroll a Person
+## Enroll Person
 ```python
 import requests
 import os
 
 auth_token = 'Token 0e653da4969a757d21de0ffa6387d5fbd6401131'
-image_path = 'input/persons/image_001.jpg'
-enroll_endpoint = 'http://sandbox.miicloud.io/miicloud/enroll'
+image_path = 'input/persons/will_smith/will_smith_001.jpg'
+api_endpoint = 'https://sandbox.miicloud.io/miicloud/person'
 enrollment_payload = 
 { 
     'customer_person_id': '1234567', 
@@ -77,19 +79,19 @@ enrollment_payload =
 }
 filename = os.path.basename(image_path)
 file = {'image_path': (filename, open(image_path, 'rb'), "multipart/form-data")}
-enroll_response = requests.post(enroll_endpoint, headers={'Authorization': auth_token}, data = enrollment_payload, files = file)
+enroll_response = requests.post(api_endpoint, headers={'Authorization': auth_token}, data = enrollment_payload, files = file)
 ```
 
 ```shell
 curl -X POST \
-api_endpoint \
+https:///sandbox.miicloud.io/miicloud/person \
 -H 'authorization: Token 0e653da4969a757d21de0ffa6387d5fbd6401131' \
--F customer_person_id=1234567
--F image_path= input/persons/image_001.jpg \
+-F customer_person_id=5712f5242cf956c7c1d248e89 \
+-F image_path=@input/persons/will_smith/will_smith_001.jpg \
 -F first_name=John \
 -F last_name=Doe \
 -F email=test@domain.com \
--F phone=0123456789 \
+-F phone=+141524204243
 ```
 
 Identifies the largest face in a given image and adds it to the database.  If a human face is not found, it returns a “fail” status.  In order to provide high accuracy for subsequent matches, during enrollment, a face must be presented with a frontal pose with area of the face consisting of eye brows, eyes, nose and lips. 
@@ -99,20 +101,25 @@ Identifies the largest face in a given image and adds it to the database.  If a 
 ```json
 {
     "status": "success",
+    "miicloud_person_id": "059339e9-02d7-4777-95ce-acca440af413",
+    "customer_person_id": "5712f5242cf956c7c1d248e89",
+    "first_name": "John",
+    "last_name": "Doe",
+    "email": "test@domain.com",
+    "phone": "+141524204243",
     "bounding_box": {
-    "left_x": 379,
-    "left_y": 260,
-    "right_x": 647,
-    "right_y": 529
-    },
-    "person_id": "3a298260-6986-41d4-972e-6f0910293362",
-    "customer_person_id": "1234567"
+        "left_x": 38,
+        "left_y": 53,
+        "right_x": 168,
+        "right_y": 183
+        },
+    "image": "enroll/will_smith_001_Fkkx7eK.jpg"
 }
 
 ```
 
 ### Sandbox API Endpoint
-`POST http://sandbox.miicloud.io/miicloud/enroll`
+`POST https://sandbox.miicloud.io/miicloud/person`
 ### Production API Endpoint
 `Please contact dev@miicloud.io`
 
@@ -121,7 +128,7 @@ Identifies the largest face in a given image and adds it to the database.  If a 
 Parameter | Required | Description
 --------- | ------- | -----------
 authorization | Yes | a unique api token per miiCloud customer
-customer_person_id | Yes | a unique identified maintained by the customer per person enrolled in the database.  This identifier allows you link multiple images of an individual to their identity and link other identifiable info such as name, etc.
+customer_person_id | Yes | a unique identifier maintained by the customer per person enrolled in the database.  This identifier allows you link multiple images of an individual to their identity and link other identifiable info such as name, etc.
 image_path | Yes | local or remote destination of the image accessible by your application
 first_name | No | first name associated with the person being added to database
 last_name | No | last name associated with the person being added to database
@@ -133,58 +140,316 @@ phone | No | phone # associated with the person being added to database
 Field | Required | Description
 --------- | ------- | -----------
 status | Yes | response by API whether it was successful or not
+miicloud_person_id | No | unique identifier stored in miiCloud per person.  This identifier links the identity in the customer’s system to miiCloud.
+customer_person_id | No | a unique identifier maintained by the customer per person enrolled in the database.  miiCloud returns this identifier in the response to allow the customer to validate correct identities were linked
+first_name | No | first name associated with the person being added to database
+last_name | No | last name associated with the person being added to database
+email | No | email associated with the person being added to database
+phone | No | phone # associated with the person being added to database
 bounding_box | No | an object with bounding box coordinates around the face
 left_x | No | x-coordinate of the bounding box’s top left corner 
 left_ y | No | y-coordinate of the bounding box’s top left corner
 right_x | No | x-coordinate of the bounding box’s bottom right corner
 right_y | No | y-coordinate of the bounding box’s bottom right corner
-person_id | No | unique identifier stored in miiCloud per person.  This identifier links the identity in the customer’s system to miiCloud.
-customer_person_id | No | a unique identified maintained by the customer per person enrolled in the database.  miiCloud returns this identifier in the response to allow the customer to validate correct identities were linked
+image | No | image name that was passed in with miicloud's suffix added to the end of filename
 
+<!-----------
+===============================================
+===============================================
+===============================================
+----------->
 
-
-## Find Matching Faces
-
-
+## Update Person
 ```python
 import requests
 import os
 
 auth_token = 'Token 0e653da4969a757d21de0ffa6387d5fbd6401131'
-image_path = 'input/test_images/test_img_001.jpg'
-math_faces_endpoint = 'http://sandbox.miicloud.io/miicloud/match_faces'
+image_path = 'input/persons/will_smith/will_smith_002.jpg'
+api_endpoint = 'https://sandbox.miicloud.io/miicloud/person'
+payload = 
+{ 
+    'customer_person_id': '5712f5242cf956c7c1d248e89', 
+    'first_name': 'John', 
+    'last_name': 'Doe', 
+    'email': 'john_doe_2@domain.com', 
+    'phone': '+12222222222' 
+}
+filename = os.path.basename(image_path)
+file = {'image_path': (filename, open(image_path, 'rb'), "multipart/form-data")}
+enroll_response = requests.put(api_endpoint, headers={'Authorization': auth_token}, data = payload, files = file)
+```
 
-match_faces_payload = {'image_path': image_path}
+```shell
+curl -X PUT \
+https://sandbox.miicloud.io/miicloud/person/5712f5242cf956c7c1d248e89 \
+-H 'authorization: Token 0e653da4969a757d21de0ffa6387d5fbd6401131' \
+-F image_path=@input/persons/will_smith/will_smith_002.jpg \
+-F first_name=John \
+-F last_name=Doe \
+-F email=john_doe_2@domain.com \
+-F phone=+12222222222
+```
+
+Updates an existing person in the database with the new information sent in the request payload.
+
+> The above request returns a JSON object structured as follows:
+
+```json
+{
+    "status": "success",
+    "miicloud_person_id": "059339e9-02d7-4777-95ce-acca440af413",
+    "customer_person_id": "5712f5242cf956c7c1d248e89",
+    "first_name": "John", 
+    "last_name": "Doe", 
+    "email": "john_doe_2@domain.com", 
+    "phone": "+12222222222", 
+    "bounding_box": {
+        "left_x": 118, 
+        "left_y": 77, 
+        "right_x": 305, 
+        "right_y": 264
+        }, 
+    "image": "enroll/will_smith_002_zktkkgN.jpg"
+}
+
+```
+
+### Sandbox API Endpoint
+`PUT https://sandbox.miicloud.io/miicloud/person`
+### Production API Endpoint
+`Please contact dev@miicloud.io`
+
+### Request Parameters
+
+Parameter | Required | Description
+--------- | ------- | -----------
+authorization | Yes | a unique api token per miiCloud customer
+customer_person_id | Yes | a unique identifier maintained by the customer per person enrolled in the database.  This identifier allows you link multiple images of an individual to their identity and link other identifiable info such as name, etc.
+image_path | No | local or remote destination of the image accessible by your application.  This image is added to the collection of image(s) already associated with the person
+first_name | No | new first name to be associated with the person 
+last_name | No | new last name to be associated with the person
+email | No | new email to be associated with the person
+phone | No | new phone # to be associated with the person
+
+### Response 
+
+Field | Required | Description
+--------- | ------- | -----------
+status | Yes | response by API whether it was successful or not
+miicloud_person_id | No | miiCloud's unique identifier associated with the person whose information was updated. This field can be used to validate correct person's information was updated.
+customer_person_id | No | the unique identifier of the Person whose information needs to be updated
+first_name | No | new or existing first name associated with the person
+last_name | No | new or existing last name associated with the person
+email | No | new or existing email associated with the person
+phone | No | new or existing phone # associated with the person
+bounding_box | No | an object with bounding box coordinates around the face (if a new image pass passed in with the Person's face)
+left_x | No | x-coordinate of the bounding box’s top left corner 
+left_ y | No | y-coordinate of the bounding box’s top left corner
+right_x | No | x-coordinate of the bounding box’s bottom right corner
+right_y | No | y-coordinate of the bounding box’s bottom right corner
+
+<!-----------
+===============================================
+===============================================
+===============================================
+----------->
+
+## Get Person
+```python
+import requests
+
+auth_token = 'Token 0e653da4969a757d21de0ffa6387d5fbd6401131'
+api_endpoint = 'https://sandbox.miicloud.io/miicloud/person
+
+payload = {'customer_person_id': '5712f5242cf956c7c1d248e89'}
+
+response = requests.get(api_endpoint, headers={'Authorization': auth_token}, data = payload)
+
+```
+
+```shell  
+curl -X GET \
+https://sandbox.miicloud.io/miicloud/person/5712f5242cf956c7c1d248e89 \
+-H 'authorization: Token 0e653da4969a757d21de0ffa6387d5fbd6401131'
+
+```
+> The above request returns a JSON object structured as follows:
+
+```json
+{
+    "customer_person_id":"5712f5242cf956c7c1d248e89",
+    "miicloud_person_id":"059339e9-02d7-4777-95ce-acca440af413",
+    "images":[
+        {
+            "image":"https://mc-enroll-images.s3.amazonaws.com/media/enroll/will_smith_002_zktkkgN.jpg",
+            "created":"2019-04-04T22:11:08.110600Z"
+        },        
+        {
+            "image":"https://mc-enroll-images.s3.amazonaws.com/media/enroll/will_smith_001_Yrayh4h.jpg",
+            "created":"2019-04-04T21:44:19.968710Z"
+        }
+    ],
+    "first_name":"John",
+    "last_name":"Doe",
+    "phone":"+12222222222",
+    "email":"john_doe_2@domain.com"
+}
+
+```
+
+Returns all the profile information associated with the person, such as their name, email, and the images used to enroll their identinty.  
+
+### Sandbox API Endpoint
+`GET https://sandbox.miicloud.io/miicloud/person`
+
+### Production API Endpoint
+`Please contact dev@miicloud.io`
+
+
+### Request Parameters
+
+Parameter | Required | Description
+--------- | ------- | -----------
+authorization | Yes | a unique api token per miiCloud customer
+customer_person_id | Yes | a unique identified maintained by the customer per person enrolled in the database
+
+### Response
+
+Field | Required | Description
+--------- | ------- | -----------
+status | No | only returns "fail" if a matching customer_person_id is not found
+customer_person_id | No | the unique identifier maintained by the customer for the given person
+miicloud_person_id | No | miiCloud's unique identifier associated with the person whose information is requested
+images | No | array of images associated with the given person
+image | No | file name 
+created | No | timestamp of when the image was enrolled by the customer
+first_name | No | first name associated with the person 
+last_name | No | last name associated with the person
+phone | No | phone # associated with the person
+email | No | email associated with the person
+
+<!-----------
+===============================================
+===============================================
+===============================================
+----------->
+
+## Delete Person
+```python
+import requests
+
+auth_token = 'Token 0e653da4969a757d21de0ffa6387d5fbd6401131'
+api_endpoint = 'https://sandbox.miicloud.io/miicloud/person
+
+payload = {'customer_person_id': '5712f5242cf956c7c1d248e89'}
+
+response = requests.delete(api_endpoint, headers={'Authorization': auth_token}, data = payload)
+
+```
+
+```shell  
+curl -X DELETE \
+https://sandbox.miicloud.io/miicloud/person/5712f5242cf956c7c1d248e89 \
+-H 'authorization: Token 0e653da4969a757d21de0ffa6387d5fbd6401131'
+
+```
+> The above request returns a JSON object structured as follows:
+
+```json
+{
+    "status":"success",
+    "customer_person_id":"5712f5242cf956c7c1d248e89",
+    "miicloud_person_id":"059339e9-02d7-4777-95ce-acca440af413"
+}
+
+```
+
+Deletes the person record all information associated with it. 
+
+<aside class="warning">
+Warning: This action cannot be reversed.
+</aside>
+
+### Sandbox API Endpoint
+`DELETE https://sandbox.miicloud.io/miicloud/person`
+
+### Production API Endpoint
+`Please contact dev@miicloud.io`
+
+
+### Request Parameters
+
+Parameter | Required | Description
+--------- | ------- | -----------
+authorization | Yes | a unique api token per miiCloud customer
+customer_person_id | Yes | the unique identifier (maintained by the customer) of the person to be deleted
+
+### Response
+
+Field | Required | Description
+--------- | ------- | -----------
+status | Yes | "success" if a person with the given "customer_person_id" is found and deleted, otherwise "fail"
+customer_person_id | No | the unique identifier of the person who was deleted
+miicloud_person_id | No | miicloud's unique identifier associated with the person who was deleted
+
+<!-----------
+===============================================
+===============================================
+===============================================
+----------->
+
+## Match Faces
+```python
+import requests
+import os
+
+auth_token = 'Token 0e653da4969a757d21de0ffa6387d5fbd6401131'
+image_path = 'input/test_images/test_001.jpg'
+api_endpoint = 'https://sandbox.miicloud.io/miicloud/match_faces'
+
+payload = {'image_path': image_path}
 filename = os.path.basename(image_path)
 file = {'image_path': (filename, open(image_path, 'rb'), "multipart/form-data")}
 
-match_faces_response = requests.post(match_faces_endpoint, headers={'Authorization': auth_token}, data = match_faces_payload, files = file)
+response = requests.post(api_endpoint, headers={'Authorization': auth_token}, data = payload, files = file)
 
 ```
 
 ```shell  
 curl -X POST \
-  api_endpoint \
-  -H 'authorization: Token 0e653da4969a757d21de0ffa6387d5fbd6401131' \
-  -F image_path= usr/local/app/data/test_img_0001.jpg
+https://sandbox.miicloud.io/miicloud/match_faces \
+-H 'authorization: Token 0e653da4969a757d21de0ffa6387d5fbd6401131' \
+-F image_path=@input/test_images/test_001.jpg \
+-F customer_person_id=8e64b48cf88349e390498c413ad2bbad
   
 ```
 > The above request returns a JSON object structured as follows:
 
 ```json
 {
-    "status": "success",
     "faces": [
         {
-        "match_status": "known",
-        "bounding_box": {
-            "left_x": 464,
-            "left_y": 291,
-            "right_x": 688,
-            "right_y": 515
-            },
-        "person_id": "3a298260-6986-41d4-972e-6f0910293362",
-        "customer_person_id": "1234567",
+            "match_status": "unknown",
+            "bounding_box": {
+                "left_x": 414,
+                "left_y": -31,
+                "right_x": 638,
+                "right_y": 218
+                },
+            "match_confidence": 0
+        },
+        {
+            "match_status": "known",
+            "bounding_box": {
+                "left_x": 98,
+                "left_y": -44,
+                "right_x": 420,
+                "right_y": 314
+                },
+            "match_confidence": 0.6426461754214432,
+            "miicloud_person_id": "e5db4da3-9d34-4a9d-b517-b203b749962c",
+            "customer_person_id": "8e64b48cf88349e390498c413ad2bbad"
         }
     ]
 }
@@ -194,7 +459,7 @@ curl -X POST \
 Matches the faces in a given image against the faces in the database for one or more matches.  
 
 ### Sandbox API Endpoint
-`POST http://sandbox.miicloud.io/miicloud/match_faces`
+`POST https://sandbox.miicloud.io/miicloud/match_faces`
 
 ### Production API Endpoint
 `Please contact dev@miicloud.io`
@@ -206,144 +471,38 @@ Parameter | Required | Description
 --------- | ------- | -----------
 authorization | Yes | a unique api token per miiCloud customer
 image_path | Yes | local or remote destination of the image accessible by your application
+customer_person_id | No | unique identifer of a person.  This field should be populated if you want to match the input image only agains this peron's enrolled images.
 
 ### Response
 
 Field | Required | Description
 --------- | ------- | -----------
-status | Yes | "success" if at least 1 face was matched, else "fail"
-faces | No | returns an array if 1 or more faces is found in the image
-match_status | No | if the face(s) in the image matche with 1 or more known person(s) in the database; values are: "known" or "uknown"
+faces | Yes | returns an array if 1 or more faces is found in the image
+match_status | No | if the face(s) in the image matche with 1 or more known person(s) in the database; values are: "known" or "unknown"
 bounding_box | No | an object with bounding box coordinates around the face
 left_x | No | x-coordinate of the bounding box’s top left corner 
 left_ y | No | y-coordinate of the bounding box’s top left corner
 right_x | No | x-coordinate of the bounding box’s bottom right corner
 right_y | No | y-coordinate of the bounding box’s bottom right corner
+match_confidence | No | value between 0 - 1 to reflect how closely the test image matches the enrolled image.  This value should be multipled by 100 to get a %.
 person_id | No | unique identifier stored in miiCloud per person.  This identifier links the identity in the customer’s system to miiCloud.
 customer_person_id | No | a unique identified maintained by the customer per person enrolled in the database.  miiCloud returns this identifier in the response to allow the customer to validate correct identities were linked
 
+<!-----------
+===============================================
+===============================================
+===============================================
+----------->
 
 
-## Get Person
-```python
-import requests
-
-auth_token = 'Token 0e653da4969a757d21de0ffa6387d5fbd6401131'
-api_endpoint = 'http://sandbox.miicloud.io/miicloud/get_person
-
-payload = {'customer_person_id': '1234567'}
-
-response = requests.get(api_endpoint, headers={'Authorization': auth_token}, data = payload)
-
-```
-
-```shell  
-curl -X GET \
-api_endpoint \
--H 'authorization: Token 0e653da4969a757d21de0ffa6387d5fbd6401131' \
--F customer_person_id=1234567
-
-```
-> The above request returns a JSON object structured as follows:
-
-```json
-{
-    "status": "success",
-    "customer_person_id": "1234567",
-    "person_id": "3a298260-6986-41d4-972e-6f0910293362",
-    "first_name": "John",
-    "last_name": "Doe",
-    "email": "test@domain.com"
-    "phone": "0123456789"
-    "images": [
-        {
-            "file": "filename"
-        }
-    ]
-}
-
-```
-
-Returns all the profile info associated with the person, such as their name, email, and the images used to enroll their identinty.  
-
-### Sandbox API Endpoint
-`POST http://sandbox.miicloud.io/miicloud/get_person`
-
-### Production API Endpoint
-`Please contact dev@miicloud.io`
 
 
-### Request Parameters
-
-Parameter | Required | Description
---------- | ------- | -----------
-authorization | Yes | a unique api token per miiCloud customer
-customer_person_id | Yes | a unique identified maintained by the customer per person enrolled in the database
-
-### Response
-
-Field | Required | Description
---------- | ------- | -----------
-status | Yes | "success" if a person with the given "customer_person_id" is found, otherwise "fail"
-customer_person_id | No | a unique identified maintained by the customer per person enrolled in the database
-person_id | No | unique identifier stored in miiCloud per person
-first_name | No | first name associated with the person being added to database
-last_name | No | last name associated with the person being added to database
-email | No | email associated with the person being added to database
-phone | No | phone # associated with the person being added to database
-images | No | array of images
-file | No | image file 
-
-## Delete Person
-```python
-import requests
-
-auth_token = 'Token 0e653da4969a757d21de0ffa6387d5fbd6401131'
-api_endpoint = 'http://sandbox.miicloud.io/miicloud/delete_person
-
-payload = {'customer_person_id': '1234567'}
-
-response = requests.delete(api_endpoint, headers={'Authorization': auth_token}, data = payload)
-
-```
-
-```shell  
-curl -X DELETE \
-api_endpoint \
--H 'authorization: Token 0e653da4969a757d21de0ffa6387d5fbd6401131' \
--F customer_person_id=1234567
-
-```
-> The above request returns a JSON object structured as follows:
-
-```json
-{
-    "status": "success",
-    "customer_person_id": "1234567",
-}
-
-```
-
-Deletes all info of the person.
-
-### Sandbox API Endpoint
-`POST http://sandbox.miicloud.io/miicloud/delete_person`
-
-### Production API Endpoint
-`Please contact dev@miicloud.io`
 
 
-### Request Parameters
 
-Parameter | Required | Description
---------- | ------- | -----------
-authorization | Yes | a unique api token per miiCloud customer
-customer_person_id | Yes | a unique identified maintained by the customer per person enrolled in the database
-
-### Response
-
-Field | Required | Description
---------- | ------- | -----------
-status | Yes | "success" if a person with the given "customer_person_id" is found and deleted, otherwise "fail"
-customer_person_id | No | a unique identified maintained by the customer per person enrolled in the database
+<!-----------
+===============================================
+===============================================
+===============================================
+----------->
 
