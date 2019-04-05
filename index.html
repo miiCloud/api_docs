@@ -229,10 +229,10 @@
             <a href="#persons" class="toc-h1 toc-link" data-title="Persons">Persons</a>
               <ul class="toc-list-h2">
                   <li>
-                    <a href="#enroll-a-person" class="toc-h2 toc-link" data-title="Enroll a Person">Enroll a Person</a>
+                    <a href="#enroll-person" class="toc-h2 toc-link" data-title="Enroll Person">Enroll Person</a>
                   </li>
                   <li>
-                    <a href="#find-matching-faces" class="toc-h2 toc-link" data-title="Find Matching Faces">Find Matching Faces</a>
+                    <a href="#update-person" class="toc-h2 toc-link" data-title="Update Person">Update Person</a>
                   </li>
                   <li>
                     <a href="#get-person" class="toc-h2 toc-link" data-title="Get Person">Get Person</a>
@@ -240,18 +240,13 @@
                   <li>
                     <a href="#delete-person" class="toc-h2 toc-link" data-title="Delete Person">Delete Person</a>
                   </li>
+                  <li>
+                    <a href="#match-faces" class="toc-h2 toc-link" data-title="Match Faces">Match Faces</a>
+                  </li>
               </ul>
           </li>
           <li>
             <a href="#errors" class="toc-h1 toc-link" data-title="Errors">Errors</a>
-          </li>
-          <li>
-            <a href="#sample-code" class="toc-h1 toc-link" data-title="Sample Code">Sample Code</a>
-              <ul class="toc-list-h2">
-                  <li>
-                    <a href="#clone-the-repo" class="toc-h2 toc-link" data-title="Clone the repo">Clone the repo</a>
-                  </li>
-              </ul>
           </li>
       </ul>
         <ul class="toc-footer">
@@ -267,9 +262,11 @@
 
 <p>miiCloud is a Computer Vision company that leverages Deep Learning for image and video analysis.  We train and calibrate our models on an extensive data pipeline to bring the best technology to our customers.  </p>
 
-<p>This guide provides an overview of using the miiCloud Application Programming Interface (API), related operations, request and response structures and sample code.  The API is organized around REST and returns JSON encoded responses. The current version of the API is 20190315v02</p>
+<p>This guide provides an overview of using the miiCloud Application Programming Interface (API), related operations, request and response structures.  The API is organized around REST and returns JSON encoded responses. </p>
 
-<p>We will continue to add new APIs to this site on a weekly basis.  If you have specific requests for your business, please contact us: dev@miicloud.io</p>
+<p>Everything on miiCloud&#39;s platform revolves around a &quot;Person&quot; and their identity.  Our goal is to provide the most secure, accurate, fast and user friendly platform to store and verify a person&#39;s identity so customers like yourself can build amazing applications for your end users.  The following document describes how to &quot;Enroll&quot; a new Person into miiCloud and the follow-on actions that are available to you. </p>
+
+<p>We will continue to add new APIs to this site on a regular basis.  If you have specific requests for your business, please contact us: dev@miicloud.io</p>
 <h1 id='authentication'>Authentication</h1>
 <blockquote>
 <p>To authorize, use this code:</p>
@@ -293,12 +290,12 @@
 <aside class="notice">
 Note the API token listed here is public.  You can use it or request a unique token at no cost by emailing dev@miicloud.io
 </aside>
-<h1 id='persons'>Persons</h1><h2 id='enroll-a-person'>Enroll a Person</h2><pre class="highlight python tab-python"><code><span class="kn">import</span> <span class="nn">requests</span>
+<h1 id='persons'>Persons</h1><h2 id='enroll-person'>Enroll Person</h2><pre class="highlight python tab-python"><code><span class="kn">import</span> <span class="nn">requests</span>
 <span class="kn">import</span> <span class="nn">os</span>
 
 <span class="n">auth_token</span> <span class="o">=</span> <span class="s">'Token 0e653da4969a757d21de0ffa6387d5fbd6401131'</span>
-<span class="n">image_path</span> <span class="o">=</span> <span class="s">'input/persons/image_001.jpg'</span>
-<span class="n">enroll_endpoint</span> <span class="o">=</span> <span class="s">'http://sandbox.miicloud.io/miicloud/enroll'</span>
+<span class="n">image_path</span> <span class="o">=</span> <span class="s">'input/persons/will_smith/will_smith_001.jpg'</span>
+<span class="n">api_endpoint</span> <span class="o">=</span> <span class="s">'https://sandbox.miicloud.io/miicloud/person'</span>
 <span class="n">enrollment_payload</span> <span class="o">=</span> 
 <span class="p">{</span> 
     <span class="s">'customer_person_id'</span><span class="p">:</span> <span class="s">'1234567'</span><span class="p">,</span> 
@@ -309,16 +306,16 @@ Note the API token listed here is public.  You can use it or request a unique to
 <span class="p">}</span>
 <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">image_path</span><span class="p">)</span>
 <span class="nb">file</span> <span class="o">=</span> <span class="p">{</span><span class="s">'image_path'</span><span class="p">:</span> <span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="n">image_path</span><span class="p">,</span> <span class="s">'rb'</span><span class="p">),</span> <span class="s">"multipart/form-data"</span><span class="p">)}</span>
-<span class="n">enroll_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">enroll_endpoint</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s">'Authorization'</span><span class="p">:</span> <span class="n">auth_token</span><span class="p">},</span> <span class="n">data</span> <span class="o">=</span> <span class="n">enrollment_payload</span><span class="p">,</span> <span class="n">files</span> <span class="o">=</span> <span class="nb">file</span><span class="p">)</span>
+<span class="n">enroll_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">api_endpoint</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s">'Authorization'</span><span class="p">:</span> <span class="n">auth_token</span><span class="p">},</span> <span class="n">data</span> <span class="o">=</span> <span class="n">enrollment_payload</span><span class="p">,</span> <span class="n">files</span> <span class="o">=</span> <span class="nb">file</span><span class="p">)</span>
 </code></pre><pre class="highlight shell tab-shell"><code>curl -X POST <span class="se">\</span>
-api_endpoint <span class="se">\</span>
+https:///sandbox.miicloud.io/miicloud/person <span class="se">\</span>
 -H <span class="s1">'authorization: Token 0e653da4969a757d21de0ffa6387d5fbd6401131'</span> <span class="se">\</span>
--F <span class="nv">customer_person_id</span><span class="o">=</span>1234567
--F <span class="nv">image_path</span><span class="o">=</span> input/persons/image_001.jpg <span class="se">\</span>
+-F <span class="nv">customer_person_id</span><span class="o">=</span>5712f5242cf956c7c1d248e89 <span class="se">\</span>
+-F <span class="nv">image_path</span><span class="o">=</span>@input/persons/will_smith/will_smith_001.jpg <span class="se">\</span>
 -F <span class="nv">first_name</span><span class="o">=</span>John <span class="se">\</span>
 -F <span class="nv">last_name</span><span class="o">=</span>Doe <span class="se">\</span>
 -F <span class="nv">email</span><span class="o">=</span><span class="nb">test</span>@domain.com <span class="se">\</span>
--F <span class="nv">phone</span><span class="o">=</span>0123456789 <span class="se">\</span>
+-F <span class="nv">phone</span><span class="o">=</span>+141524204243
 </code></pre>
 <p>Identifies the largest face in a given image and adds it to the database.  If a human face is not found, it returns a “fail” status.  In order to provide high accuracy for subsequent matches, during enrollment, a face must be presented with a frontal pose with area of the face consisting of eye brows, eyes, nose and lips. </p>
 
@@ -327,18 +324,23 @@ api_endpoint <span class="se">\</span>
 </blockquote>
 <pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
     </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"success"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"miicloud_person_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"059339e9-02d7-4777-95ce-acca440af413"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"customer_person_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"5712f5242cf956c7c1d248e89"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"first_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"John"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"last_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Doe"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"test@domain.com"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"phone"</span><span class="p">:</span><span class="w"> </span><span class="s2">"+141524204243"</span><span class="p">,</span><span class="w">
     </span><span class="s2">"bounding_box"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-    </span><span class="s2">"left_x"</span><span class="p">:</span><span class="w"> </span><span class="mi">379</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"left_y"</span><span class="p">:</span><span class="w"> </span><span class="mi">260</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"right_x"</span><span class="p">:</span><span class="w"> </span><span class="mi">647</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"right_y"</span><span class="p">:</span><span class="w"> </span><span class="mi">529</span><span class="w">
-    </span><span class="p">},</span><span class="w">
-    </span><span class="s2">"person_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"3a298260-6986-41d4-972e-6f0910293362"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"customer_person_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1234567"</span><span class="w">
+        </span><span class="s2">"left_x"</span><span class="p">:</span><span class="w"> </span><span class="mi">38</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"left_y"</span><span class="p">:</span><span class="w"> </span><span class="mi">53</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"right_x"</span><span class="p">:</span><span class="w"> </span><span class="mi">168</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"right_y"</span><span class="p">:</span><span class="w"> </span><span class="mi">183</span><span class="w">
+        </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"image"</span><span class="p">:</span><span class="w"> </span><span class="s2">"enroll/will_smith_001_Fkkx7eK.jpg"</span><span class="w">
 </span><span class="p">}</span><span class="w">
 
 </span></code></pre><h3 id='sandbox-api-endpoint'>Sandbox API Endpoint</h3>
-<p><code>POST http://sandbox.miicloud.io/miicloud/enroll</code></p>
+<p><code>POST https://sandbox.miicloud.io/miicloud/person</code></p>
 <h3 id='production-api-endpoint'>Production API Endpoint</h3>
 <p><code>Please contact dev@miicloud.io</code></p>
 <h3 id='request-parameters'>Request Parameters</h3>
@@ -357,7 +359,7 @@ api_endpoint <span class="se">\</span>
 <tr>
 <td>customer_person_id</td>
 <td>Yes</td>
-<td>a unique identified maintained by the customer per person enrolled in the database.  This identifier allows you link multiple images of an individual to their identity and link other identifiable info such as name, etc.</td>
+<td>a unique identifier maintained by the customer per person enrolled in the database.  This identifier allows you link multiple images of an individual to their identity and link other identifiable info such as name, etc.</td>
 </tr>
 <tr>
 <td>image_path</td>
@@ -399,6 +401,36 @@ api_endpoint <span class="se">\</span>
 <td>response by API whether it was successful or not</td>
 </tr>
 <tr>
+<td>miicloud_person_id</td>
+<td>No</td>
+<td>unique identifier stored in miiCloud per person.  This identifier links the identity in the customer’s system to miiCloud.</td>
+</tr>
+<tr>
+<td>customer_person_id</td>
+<td>No</td>
+<td>a unique identifier maintained by the customer per person enrolled in the database.  miiCloud returns this identifier in the response to allow the customer to validate correct identities were linked</td>
+</tr>
+<tr>
+<td>first_name</td>
+<td>No</td>
+<td>first name associated with the person being added to database</td>
+</tr>
+<tr>
+<td>last_name</td>
+<td>No</td>
+<td>last name associated with the person being added to database</td>
+</tr>
+<tr>
+<td>email</td>
+<td>No</td>
+<td>email associated with the person being added to database</td>
+</tr>
+<tr>
+<td>phone</td>
+<td>No</td>
+<td>phone # associated with the person being added to database</td>
+</tr>
+<tr>
 <td>bounding_box</td>
 <td>No</td>
 <td>an object with bounding box coordinates around the face</td>
@@ -424,59 +456,67 @@ api_endpoint <span class="se">\</span>
 <td>y-coordinate of the bounding box’s bottom right corner</td>
 </tr>
 <tr>
-<td>person_id</td>
+<td>image</td>
 <td>No</td>
-<td>unique identifier stored in miiCloud per person.  This identifier links the identity in the customer’s system to miiCloud.</td>
-</tr>
-<tr>
-<td>customer_person_id</td>
-<td>No</td>
-<td>a unique identified maintained by the customer per person enrolled in the database.  miiCloud returns this identifier in the response to allow the customer to validate correct identities were linked</td>
+<td>image name that was passed in with miicloud&#39;s suffix added to the end of filename</td>
 </tr>
 </tbody></table>
-<h2 id='find-matching-faces'>Find Matching Faces</h2><pre class="highlight python tab-python"><code><span class="kn">import</span> <span class="nn">requests</span>
+
+<!-----------
+===============================================
+===============================================
+===============================================
+----------->
+<h2 id='update-person'>Update Person</h2><pre class="highlight python tab-python"><code><span class="kn">import</span> <span class="nn">requests</span>
 <span class="kn">import</span> <span class="nn">os</span>
 
 <span class="n">auth_token</span> <span class="o">=</span> <span class="s">'Token 0e653da4969a757d21de0ffa6387d5fbd6401131'</span>
-<span class="n">image_path</span> <span class="o">=</span> <span class="s">'input/test_images/test_img_001.jpg'</span>
-<span class="n">math_faces_endpoint</span> <span class="o">=</span> <span class="s">'http://sandbox.miicloud.io/miicloud/match_faces'</span>
-
-<span class="n">match_faces_payload</span> <span class="o">=</span> <span class="p">{</span><span class="s">'image_path'</span><span class="p">:</span> <span class="n">image_path</span><span class="p">}</span>
+<span class="n">image_path</span> <span class="o">=</span> <span class="s">'input/persons/will_smith/will_smith_002.jpg'</span>
+<span class="n">api_endpoint</span> <span class="o">=</span> <span class="s">'https://sandbox.miicloud.io/miicloud/person'</span>
+<span class="n">payload</span> <span class="o">=</span> 
+<span class="p">{</span> 
+    <span class="s">'customer_person_id'</span><span class="p">:</span> <span class="s">'5712f5242cf956c7c1d248e89'</span><span class="p">,</span> 
+    <span class="s">'first_name'</span><span class="p">:</span> <span class="s">'John'</span><span class="p">,</span> 
+    <span class="s">'last_name'</span><span class="p">:</span> <span class="s">'Doe'</span><span class="p">,</span> 
+    <span class="s">'email'</span><span class="p">:</span> <span class="s">'john_doe_2@domain.com'</span><span class="p">,</span> 
+    <span class="s">'phone'</span><span class="p">:</span> <span class="s">'+12222222222'</span> 
+<span class="p">}</span>
 <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">image_path</span><span class="p">)</span>
 <span class="nb">file</span> <span class="o">=</span> <span class="p">{</span><span class="s">'image_path'</span><span class="p">:</span> <span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="n">image_path</span><span class="p">,</span> <span class="s">'rb'</span><span class="p">),</span> <span class="s">"multipart/form-data"</span><span class="p">)}</span>
-
-<span class="n">match_faces_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">match_faces_endpoint</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s">'Authorization'</span><span class="p">:</span> <span class="n">auth_token</span><span class="p">},</span> <span class="n">data</span> <span class="o">=</span> <span class="n">match_faces_payload</span><span class="p">,</span> <span class="n">files</span> <span class="o">=</span> <span class="nb">file</span><span class="p">)</span>
-
-</code></pre><pre class="highlight shell tab-shell"><code>curl -X POST <span class="se">\</span>
-  api_endpoint <span class="se">\</span>
-  -H <span class="s1">'authorization: Token 0e653da4969a757d21de0ffa6387d5fbd6401131'</span> <span class="se">\</span>
-  -F <span class="nv">image_path</span><span class="o">=</span> usr/local/app/data/test_img_0001.jpg
-
+<span class="n">enroll_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">api_endpoint</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s">'Authorization'</span><span class="p">:</span> <span class="n">auth_token</span><span class="p">},</span> <span class="n">data</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">files</span> <span class="o">=</span> <span class="nb">file</span><span class="p">)</span>
+</code></pre><pre class="highlight shell tab-shell"><code>curl -X PUT <span class="se">\</span>
+https://sandbox.miicloud.io/miicloud/person/5712f5242cf956c7c1d248e89 <span class="se">\</span>
+-H <span class="s1">'authorization: Token 0e653da4969a757d21de0ffa6387d5fbd6401131'</span> <span class="se">\</span>
+-F <span class="nv">image_path</span><span class="o">=</span>@input/persons/will_smith/will_smith_002.jpg <span class="se">\</span>
+-F <span class="nv">first_name</span><span class="o">=</span>John <span class="se">\</span>
+-F <span class="nv">last_name</span><span class="o">=</span>Doe <span class="se">\</span>
+-F <span class="nv">email</span><span class="o">=</span>john_doe_2@domain.com <span class="se">\</span>
+-F <span class="nv">phone</span><span class="o">=</span>+12222222222
 </code></pre>
+<p>Updates an existing person in the database with the new information sent in the request payload.</p>
+
 <blockquote>
 <p>The above request returns a JSON object structured as follows:</p>
 </blockquote>
 <pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
     </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"success"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"faces"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
-        </span><span class="p">{</span><span class="w">
-        </span><span class="s2">"match_status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"known"</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"bounding_box"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-            </span><span class="s2">"left_x"</span><span class="p">:</span><span class="w"> </span><span class="mi">464</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"left_y"</span><span class="p">:</span><span class="w"> </span><span class="mi">291</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"right_x"</span><span class="p">:</span><span class="w"> </span><span class="mi">688</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"right_y"</span><span class="p">:</span><span class="w"> </span><span class="mi">515</span><span class="w">
-            </span><span class="p">},</span><span class="w">
-        </span><span class="s2">"person_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"3a298260-6986-41d4-972e-6f0910293362"</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"customer_person_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1234567"</span><span class="p">,</span><span class="w">
-        </span><span class="p">}</span><span class="w">
-    </span><span class="p">]</span><span class="w">
+    </span><span class="s2">"miicloud_person_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"059339e9-02d7-4777-95ce-acca440af413"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"customer_person_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"5712f5242cf956c7c1d248e89"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"first_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"John"</span><span class="p">,</span><span class="w"> 
+    </span><span class="s2">"last_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Doe"</span><span class="p">,</span><span class="w"> 
+    </span><span class="s2">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"john_doe_2@domain.com"</span><span class="p">,</span><span class="w"> 
+    </span><span class="s2">"phone"</span><span class="p">:</span><span class="w"> </span><span class="s2">"+12222222222"</span><span class="p">,</span><span class="w"> 
+    </span><span class="s2">"bounding_box"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"left_x"</span><span class="p">:</span><span class="w"> </span><span class="mi">118</span><span class="p">,</span><span class="w"> 
+        </span><span class="s2">"left_y"</span><span class="p">:</span><span class="w"> </span><span class="mi">77</span><span class="p">,</span><span class="w"> 
+        </span><span class="s2">"right_x"</span><span class="p">:</span><span class="w"> </span><span class="mi">305</span><span class="p">,</span><span class="w"> 
+        </span><span class="s2">"right_y"</span><span class="p">:</span><span class="w"> </span><span class="mi">264</span><span class="w">
+        </span><span class="p">},</span><span class="w"> 
+    </span><span class="s2">"image"</span><span class="p">:</span><span class="w"> </span><span class="s2">"enroll/will_smith_002_zktkkgN.jpg"</span><span class="w">
 </span><span class="p">}</span><span class="w">
 
-</span></code></pre>
-<p>Matches the faces in a given image against the faces in the database for one or more matches.  </p>
-<h3 id='sandbox-api-endpoint-2'>Sandbox API Endpoint</h3>
-<p><code>POST http://sandbox.miicloud.io/miicloud/match_faces</code></p>
+</span></code></pre><h3 id='sandbox-api-endpoint-2'>Sandbox API Endpoint</h3>
+<p><code>PUT https://sandbox.miicloud.io/miicloud/person</code></p>
 <h3 id='production-api-endpoint-2'>Production API Endpoint</h3>
 <p><code>Please contact dev@miicloud.io</code></p>
 <h3 id='request-parameters-2'>Request Parameters</h3>
@@ -493,9 +533,34 @@ api_endpoint <span class="se">\</span>
 <td>a unique api token per miiCloud customer</td>
 </tr>
 <tr>
-<td>image_path</td>
+<td>customer_person_id</td>
 <td>Yes</td>
-<td>local or remote destination of the image accessible by your application</td>
+<td>a unique identifier maintained by the customer per person enrolled in the database.  This identifier allows you link multiple images of an individual to their identity and link other identifiable info such as name, etc.</td>
+</tr>
+<tr>
+<td>image_path</td>
+<td>No</td>
+<td>local or remote destination of the image accessible by your application.  This image is added to the collection of image(s) already associated with the person</td>
+</tr>
+<tr>
+<td>first_name</td>
+<td>No</td>
+<td>new first name to be associated with the person</td>
+</tr>
+<tr>
+<td>last_name</td>
+<td>No</td>
+<td>new last name to be associated with the person</td>
+</tr>
+<tr>
+<td>email</td>
+<td>No</td>
+<td>new email to be associated with the person</td>
+</tr>
+<tr>
+<td>phone</td>
+<td>No</td>
+<td>new phone # to be associated with the person</td>
 </tr>
 </tbody></table>
 <h3 id='response-2'>Response</h3>
@@ -509,22 +574,42 @@ api_endpoint <span class="se">\</span>
 <tr>
 <td>status</td>
 <td>Yes</td>
-<td>&quot;success&quot; if at least 1 face was matched, else &quot;fail&quot;</td>
+<td>response by API whether it was successful or not</td>
 </tr>
 <tr>
-<td>faces</td>
+<td>miicloud_person_id</td>
 <td>No</td>
-<td>returns an array if 1 or more faces is found in the image</td>
+<td>miiCloud&#39;s unique identifier associated with the person whose information was updated. This field can be used to validate correct person&#39;s information was updated.</td>
 </tr>
 <tr>
-<td>match_status</td>
+<td>customer_person_id</td>
 <td>No</td>
-<td>if the face(s) in the image matche with 1 or more known person(s) in the database; values are: &quot;known&quot; or &quot;uknown&quot;</td>
+<td>the unique identifier of the Person whose information needs to be updated</td>
+</tr>
+<tr>
+<td>first_name</td>
+<td>No</td>
+<td>new or existing first name associated with the person</td>
+</tr>
+<tr>
+<td>last_name</td>
+<td>No</td>
+<td>new or existing last name associated with the person</td>
+</tr>
+<tr>
+<td>email</td>
+<td>No</td>
+<td>new or existing email associated with the person</td>
+</tr>
+<tr>
+<td>phone</td>
+<td>No</td>
+<td>new or existing phone # associated with the person</td>
 </tr>
 <tr>
 <td>bounding_box</td>
 <td>No</td>
-<td>an object with bounding box coordinates around the face</td>
+<td>an object with bounding box coordinates around the face (if a new image pass passed in with the Person&#39;s face)</td>
 </tr>
 <tr>
 <td>left_x</td>
@@ -546,54 +631,53 @@ api_endpoint <span class="se">\</span>
 <td>No</td>
 <td>y-coordinate of the bounding box’s bottom right corner</td>
 </tr>
-<tr>
-<td>person_id</td>
-<td>No</td>
-<td>unique identifier stored in miiCloud per person.  This identifier links the identity in the customer’s system to miiCloud.</td>
-</tr>
-<tr>
-<td>customer_person_id</td>
-<td>No</td>
-<td>a unique identified maintained by the customer per person enrolled in the database.  miiCloud returns this identifier in the response to allow the customer to validate correct identities were linked</td>
-</tr>
 </tbody></table>
+
+<!-----------
+===============================================
+===============================================
+===============================================
+----------->
 <h2 id='get-person'>Get Person</h2><pre class="highlight python tab-python"><code><span class="kn">import</span> <span class="nn">requests</span>
 
 <span class="n">auth_token</span> <span class="o">=</span> <span class="s">'Token 0e653da4969a757d21de0ffa6387d5fbd6401131'</span>
-<span class="n">api_endpoint</span> <span class="o">=</span> <span class="s">'http://sandbox.miicloud.io/miicloud/get_person</span><span class="err">
+<span class="n">api_endpoint</span> <span class="o">=</span> <span class="s">'https://sandbox.miicloud.io/miicloud/person</span><span class="err">
 
-</span><span class="s">payload = {'</span><span class="n">customer_person_id</span><span class="s">': '</span><span class="mi">1234567</span><span class="s">'}</span><span class="err">
+</span><span class="s">payload = {'</span><span class="n">customer_person_id</span><span class="s">': '</span><span class="mi">5712</span><span class="n">f5242cf956c7c1d248e89</span><span class="s">'}</span><span class="err">
 
 </span><span class="s">response = requests.get(api_endpoint, headers={'</span><span class="n">Authorization</span><span class="s">': auth_token}, data = payload)</span><span class="err">
 
 </span></code></pre><pre class="highlight shell tab-shell"><code>curl -X GET <span class="se">\</span>
-api_endpoint <span class="se">\</span>
--H <span class="s1">'authorization: Token 0e653da4969a757d21de0ffa6387d5fbd6401131'</span> <span class="se">\</span>
--F <span class="nv">customer_person_id</span><span class="o">=</span>1234567
+https://sandbox.miicloud.io/miicloud/person/5712f5242cf956c7c1d248e89 <span class="se">\</span>
+-H <span class="s1">'authorization: Token 0e653da4969a757d21de0ffa6387d5fbd6401131'</span>
 
 </code></pre>
 <blockquote>
 <p>The above request returns a JSON object structured as follows:</p>
 </blockquote>
 <pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-    </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"success"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"customer_person_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1234567"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"person_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"3a298260-6986-41d4-972e-6f0910293362"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"first_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"John"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"last_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Doe"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"test@domain.com"</span><span class="w">
-    </span><span class="s2">"phone"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0123456789"</span><span class="w">
-    </span><span class="s2">"images"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="s2">"customer_person_id"</span><span class="p">:</span><span class="s2">"5712f5242cf956c7c1d248e89"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"miicloud_person_id"</span><span class="p">:</span><span class="s2">"059339e9-02d7-4777-95ce-acca440af413"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"images"</span><span class="p">:[</span><span class="w">
         </span><span class="p">{</span><span class="w">
-            </span><span class="s2">"file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"filename"</span><span class="w">
+            </span><span class="s2">"image"</span><span class="p">:</span><span class="s2">"https://mc-enroll-images.s3.amazonaws.com/media/enroll/will_smith_002_zktkkgN.jpg"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"created"</span><span class="p">:</span><span class="s2">"2019-04-04T22:11:08.110600Z"</span><span class="w">
+        </span><span class="p">},</span><span class="w">        
+        </span><span class="p">{</span><span class="w">
+            </span><span class="s2">"image"</span><span class="p">:</span><span class="s2">"https://mc-enroll-images.s3.amazonaws.com/media/enroll/will_smith_001_Yrayh4h.jpg"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"created"</span><span class="p">:</span><span class="s2">"2019-04-04T21:44:19.968710Z"</span><span class="w">
         </span><span class="p">}</span><span class="w">
-    </span><span class="p">]</span><span class="w">
+    </span><span class="p">],</span><span class="w">
+    </span><span class="s2">"first_name"</span><span class="p">:</span><span class="s2">"John"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"last_name"</span><span class="p">:</span><span class="s2">"Doe"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"phone"</span><span class="p">:</span><span class="s2">"+12222222222"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"email"</span><span class="p">:</span><span class="s2">"john_doe_2@domain.com"</span><span class="w">
 </span><span class="p">}</span><span class="w">
 
 </span></code></pre>
-<p>Returns all the profile info associated with the person, such as their name, email, and the images used to enroll their identinty.  </p>
+<p>Returns all the profile information associated with the person, such as their name, email, and the images used to enroll their identinty.  </p>
 <h3 id='sandbox-api-endpoint-3'>Sandbox API Endpoint</h3>
-<p><code>POST http://sandbox.miicloud.io/miicloud/get_person</code></p>
+<p><code>GET https://sandbox.miicloud.io/miicloud/person</code></p>
 <h3 id='production-api-endpoint-3'>Production API Endpoint</h3>
 <p><code>Please contact dev@miicloud.io</code></p>
 <h3 id='request-parameters-3'>Request Parameters</h3>
@@ -625,77 +709,92 @@ api_endpoint <span class="se">\</span>
 </thead><tbody>
 <tr>
 <td>status</td>
-<td>Yes</td>
-<td>&quot;success&quot; if a person with the given &quot;customer_person_id&quot; is found, otherwise &quot;fail&quot;</td>
+<td>No</td>
+<td>only returns &quot;fail&quot; if a matching customer_person_id is not found</td>
 </tr>
 <tr>
 <td>customer_person_id</td>
 <td>No</td>
-<td>a unique identified maintained by the customer per person enrolled in the database</td>
+<td>the unique identifier maintained by the customer for the given person</td>
 </tr>
 <tr>
-<td>person_id</td>
+<td>miicloud_person_id</td>
 <td>No</td>
-<td>unique identifier stored in miiCloud per person</td>
-</tr>
-<tr>
-<td>first_name</td>
-<td>No</td>
-<td>first name associated with the person being added to database</td>
-</tr>
-<tr>
-<td>last_name</td>
-<td>No</td>
-<td>last name associated with the person being added to database</td>
-</tr>
-<tr>
-<td>email</td>
-<td>No</td>
-<td>email associated with the person being added to database</td>
-</tr>
-<tr>
-<td>phone</td>
-<td>No</td>
-<td>phone # associated with the person being added to database</td>
+<td>miiCloud&#39;s unique identifier associated with the person whose information is requested</td>
 </tr>
 <tr>
 <td>images</td>
 <td>No</td>
-<td>array of images</td>
+<td>array of images associated with the given person</td>
 </tr>
 <tr>
-<td>file</td>
+<td>image</td>
 <td>No</td>
-<td>image file</td>
+<td>file name</td>
+</tr>
+<tr>
+<td>created</td>
+<td>No</td>
+<td>timestamp of when the image was enrolled by the customer</td>
+</tr>
+<tr>
+<td>first_name</td>
+<td>No</td>
+<td>first name associated with the person</td>
+</tr>
+<tr>
+<td>last_name</td>
+<td>No</td>
+<td>last name associated with the person</td>
+</tr>
+<tr>
+<td>phone</td>
+<td>No</td>
+<td>phone # associated with the person</td>
+</tr>
+<tr>
+<td>email</td>
+<td>No</td>
+<td>email associated with the person</td>
 </tr>
 </tbody></table>
+
+<!-----------
+===============================================
+===============================================
+===============================================
+----------->
 <h2 id='delete-person'>Delete Person</h2><pre class="highlight python tab-python"><code><span class="kn">import</span> <span class="nn">requests</span>
 
 <span class="n">auth_token</span> <span class="o">=</span> <span class="s">'Token 0e653da4969a757d21de0ffa6387d5fbd6401131'</span>
-<span class="n">api_endpoint</span> <span class="o">=</span> <span class="s">'http://sandbox.miicloud.io/miicloud/delete_person</span><span class="err">
+<span class="n">api_endpoint</span> <span class="o">=</span> <span class="s">'https://sandbox.miicloud.io/miicloud/person</span><span class="err">
 
-</span><span class="s">payload = {'</span><span class="n">customer_person_id</span><span class="s">': '</span><span class="mi">1234567</span><span class="s">'}</span><span class="err">
+</span><span class="s">payload = {'</span><span class="n">customer_person_id</span><span class="s">': '</span><span class="mi">5712</span><span class="n">f5242cf956c7c1d248e89</span><span class="s">'}</span><span class="err">
 
 </span><span class="s">response = requests.delete(api_endpoint, headers={'</span><span class="n">Authorization</span><span class="s">': auth_token}, data = payload)</span><span class="err">
 
 </span></code></pre><pre class="highlight shell tab-shell"><code>curl -X DELETE <span class="se">\</span>
-api_endpoint <span class="se">\</span>
--H <span class="s1">'authorization: Token 0e653da4969a757d21de0ffa6387d5fbd6401131'</span> <span class="se">\</span>
--F <span class="nv">customer_person_id</span><span class="o">=</span>1234567
+https://sandbox.miicloud.io/miicloud/person/5712f5242cf956c7c1d248e89 <span class="se">\</span>
+-H <span class="s1">'authorization: Token 0e653da4969a757d21de0ffa6387d5fbd6401131'</span>
 
 </code></pre>
 <blockquote>
 <p>The above request returns a JSON object structured as follows:</p>
 </blockquote>
 <pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-    </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"success"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"customer_person_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1234567"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"status"</span><span class="p">:</span><span class="s2">"success"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"customer_person_id"</span><span class="p">:</span><span class="s2">"5712f5242cf956c7c1d248e89"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"miicloud_person_id"</span><span class="p">:</span><span class="s2">"059339e9-02d7-4777-95ce-acca440af413"</span><span class="w">
 </span><span class="p">}</span><span class="w">
 
 </span></code></pre>
-<p>Deletes all info of the person.</p>
+<p>Deletes the person record all information associated with it. </p>
+
+<aside class="warning">
+Warning: This action cannot be reversed.
+</aside>
 <h3 id='sandbox-api-endpoint-4'>Sandbox API Endpoint</h3>
-<p><code>POST http://sandbox.miicloud.io/miicloud/delete_person</code></p>
+<p><code>DELETE https://sandbox.miicloud.io/miicloud/person</code></p>
 <h3 id='production-api-endpoint-4'>Production API Endpoint</h3>
 <p><code>Please contact dev@miicloud.io</code></p>
 <h3 id='request-parameters-4'>Request Parameters</h3>
@@ -714,7 +813,7 @@ api_endpoint <span class="se">\</span>
 <tr>
 <td>customer_person_id</td>
 <td>Yes</td>
-<td>a unique identified maintained by the customer per person enrolled in the database</td>
+<td>the unique identifier (maintained by the customer) of the person to be deleted</td>
 </tr>
 </tbody></table>
 <h3 id='response-4'>Response</h3>
@@ -733,9 +832,171 @@ api_endpoint <span class="se">\</span>
 <tr>
 <td>customer_person_id</td>
 <td>No</td>
-<td>a unique identified maintained by the customer per person enrolled in the database</td>
+<td>the unique identifier of the person who was deleted</td>
+</tr>
+<tr>
+<td>miicloud_person_id</td>
+<td>No</td>
+<td>miicloud&#39;s unique identifier associated with the person who was deleted</td>
 </tr>
 </tbody></table>
+
+<!-----------
+===============================================
+===============================================
+===============================================
+----------->
+<h2 id='match-faces'>Match Faces</h2><pre class="highlight python tab-python"><code><span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="n">auth_token</span> <span class="o">=</span> <span class="s">'Token 0e653da4969a757d21de0ffa6387d5fbd6401131'</span>
+<span class="n">image_path</span> <span class="o">=</span> <span class="s">'input/test_images/test_001.jpg'</span>
+<span class="n">api_endpoint</span> <span class="o">=</span> <span class="s">'https://sandbox.miicloud.io/miicloud/match_faces'</span>
+
+<span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s">'image_path'</span><span class="p">:</span> <span class="n">image_path</span><span class="p">}</span>
+<span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">image_path</span><span class="p">)</span>
+<span class="nb">file</span> <span class="o">=</span> <span class="p">{</span><span class="s">'image_path'</span><span class="p">:</span> <span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="n">image_path</span><span class="p">,</span> <span class="s">'rb'</span><span class="p">),</span> <span class="s">"multipart/form-data"</span><span class="p">)}</span>
+
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">api_endpoint</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s">'Authorization'</span><span class="p">:</span> <span class="n">auth_token</span><span class="p">},</span> <span class="n">data</span> <span class="o">=</span> <span class="n">payload</span><span class="p">,</span> <span class="n">files</span> <span class="o">=</span> <span class="nb">file</span><span class="p">)</span>
+
+</code></pre><pre class="highlight shell tab-shell"><code>curl -X POST <span class="se">\</span>
+https://sandbox.miicloud.io/miicloud/match_faces <span class="se">\</span>
+-H <span class="s1">'authorization: Token 0e653da4969a757d21de0ffa6387d5fbd6401131'</span> <span class="se">\</span>
+-F <span class="nv">image_path</span><span class="o">=</span>@input/test_images/test_001.jpg <span class="se">\</span>
+-F <span class="nv">customer_person_id</span><span class="o">=</span>8e64b48cf88349e390498c413ad2bbad
+
+</code></pre>
+<blockquote>
+<p>The above request returns a JSON object structured as follows:</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+    </span><span class="s2">"faces"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+        </span><span class="p">{</span><span class="w">
+            </span><span class="s2">"match_status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"unknown"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"bounding_box"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+                </span><span class="s2">"left_x"</span><span class="p">:</span><span class="w"> </span><span class="mi">414</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"left_y"</span><span class="p">:</span><span class="w"> </span><span class="mi">-31</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"right_x"</span><span class="p">:</span><span class="w"> </span><span class="mi">638</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"right_y"</span><span class="p">:</span><span class="w"> </span><span class="mi">218</span><span class="w">
+                </span><span class="p">},</span><span class="w">
+            </span><span class="s2">"match_confidence"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w">
+        </span><span class="p">},</span><span class="w">
+        </span><span class="p">{</span><span class="w">
+            </span><span class="s2">"match_status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"known"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"bounding_box"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+                </span><span class="s2">"left_x"</span><span class="p">:</span><span class="w"> </span><span class="mi">98</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"left_y"</span><span class="p">:</span><span class="w"> </span><span class="mi">-44</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"right_x"</span><span class="p">:</span><span class="w"> </span><span class="mi">420</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"right_y"</span><span class="p">:</span><span class="w"> </span><span class="mi">314</span><span class="w">
+                </span><span class="p">},</span><span class="w">
+            </span><span class="s2">"match_confidence"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.6426461754214432</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"miicloud_person_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"e5db4da3-9d34-4a9d-b517-b203b749962c"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"customer_person_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"8e64b48cf88349e390498c413ad2bbad"</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+    </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span></code></pre>
+<p>Matches the faces in a given image against the faces in the database for one or more matches.  </p>
+<h3 id='sandbox-api-endpoint-5'>Sandbox API Endpoint</h3>
+<p><code>POST https://sandbox.miicloud.io/miicloud/match_faces</code></p>
+<h3 id='production-api-endpoint-5'>Production API Endpoint</h3>
+<p><code>Please contact dev@miicloud.io</code></p>
+<h3 id='request-parameters-5'>Request Parameters</h3>
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>authorization</td>
+<td>Yes</td>
+<td>a unique api token per miiCloud customer</td>
+</tr>
+<tr>
+<td>image_path</td>
+<td>Yes</td>
+<td>local or remote destination of the image accessible by your application</td>
+</tr>
+<tr>
+<td>customer_person_id</td>
+<td>No</td>
+<td>unique identifer of a person.  This field should be populated if you want to match the input image only agains this peron&#39;s enrolled images.</td>
+</tr>
+</tbody></table>
+<h3 id='response-5'>Response</h3>
+<table><thead>
+<tr>
+<th>Field</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>faces</td>
+<td>Yes</td>
+<td>returns an array if 1 or more faces is found in the image</td>
+</tr>
+<tr>
+<td>match_status</td>
+<td>No</td>
+<td>if the face(s) in the image matche with 1 or more known person(s) in the database; values are: &quot;known&quot; or &quot;unknown&quot;</td>
+</tr>
+<tr>
+<td>bounding_box</td>
+<td>No</td>
+<td>an object with bounding box coordinates around the face</td>
+</tr>
+<tr>
+<td>left_x</td>
+<td>No</td>
+<td>x-coordinate of the bounding box’s top left corner</td>
+</tr>
+<tr>
+<td>left_ y</td>
+<td>No</td>
+<td>y-coordinate of the bounding box’s top left corner</td>
+</tr>
+<tr>
+<td>right_x</td>
+<td>No</td>
+<td>x-coordinate of the bounding box’s bottom right corner</td>
+</tr>
+<tr>
+<td>right_y</td>
+<td>No</td>
+<td>y-coordinate of the bounding box’s bottom right corner</td>
+</tr>
+<tr>
+<td>match_confidence</td>
+<td>No</td>
+<td>value between 0 - 1 to reflect how closely the test image matches the enrolled image.  This value should be multipled by 100 to get a %.</td>
+</tr>
+<tr>
+<td>person_id</td>
+<td>No</td>
+<td>unique identifier stored in miiCloud per person.  This identifier links the identity in the customer’s system to miiCloud.</td>
+</tr>
+<tr>
+<td>customer_person_id</td>
+<td>No</td>
+<td>a unique identified maintained by the customer per person enrolled in the database.  miiCloud returns this identifier in the response to allow the customer to validate correct identities were linked</td>
+</tr>
+</tbody></table>
+
+<!-----------
+===============================================
+===============================================
+===============================================
+----------->
+
+<!-----------
+===============================================
+===============================================
+===============================================
+----------->
 <h1 id='errors'>Errors</h1>
 <p>miiCloud API uses the following error codes.  Please contact dev@miicloud.io if you experience any issues.</p>
 
@@ -774,13 +1035,6 @@ api_endpoint <span class="se">\</span>
 <td>Unsupported Media Type -- The file format of the image / video is not supported by the API.</td>
 </tr>
 </tbody></table>
-<p>language_tabs:
-- shell</p>
-<h1 id='sample-code'>Sample Code</h1><h3 id='clone-the-repo'>Clone the repo</h3><pre class="highlight shell tab-shell"><code>git clone https://github.com/miiCloud/sandbox_api_test
-</code></pre>
-<p>To facilitate the testing of miiCloud’s API, we have provided sample test files and python code.  It can downloaded from our <a href="https://github.com/miiCloud/sandbox_api_test">public github repo.</a></p>
-
-<p><code>git clone https://github.com/miiCloud/sandbox_api_test</code></p>
 
       </div>
       <div class="dark-box">
