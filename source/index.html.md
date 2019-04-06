@@ -117,6 +117,7 @@ Identifies the largest face in a given image and adds it to the database.  If a 
 }
 
 ```
+>Successfull HTTP status code = 200
 
 ### Sandbox API Endpoint
 `POST https://sandbox.miicloud.io/miicloud/person`
@@ -165,7 +166,7 @@ import requests
 import os
 
 auth_token = 'Token 0e653da4969a757d21de0ffa6387d5fbd6401131'
-image_path = 'input/persons/will_smith/will_smith_002.jpg'
+image_path = 'input/persons/will_smith/will_smith_003.jpg'
 api_endpoint = 'https://sandbox.miicloud.io/miicloud/person'
 payload = 
 { 
@@ -184,7 +185,7 @@ enroll_response = requests.put(api_endpoint, headers={'Authorization': auth_toke
 curl -X PUT \
 https://sandbox.miicloud.io/miicloud/person/5712f5242cf956c7c1d248e89 \
 -H 'authorization: Token 0e653da4969a757d21de0ffa6387d5fbd6401131' \
--F image_path=@input/persons/will_smith/will_smith_002.jpg \
+-F image_path=@input/persons/will_smith/will_smith_003.jpg \
 -F first_name=John \
 -F last_name=Doe \
 -F email=john_doe_2@domain.com \
@@ -193,27 +194,41 @@ https://sandbox.miicloud.io/miicloud/person/5712f5242cf956c7c1d248e89 \
 
 Updates an existing person in the database with the new information sent in the request payload.
 
+<aside class="notice">
+If any field is left blank in the request, the Person's data will be removed for that field(s).  The "image_path" field can be left blank since previously enrolled images will not be removed.
+</aside>
+
 > The above request returns a JSON object structured as follows:
 
 ```json
 {
     "status": "success",
-    "miicloud_person_id": "059339e9-02d7-4777-95ce-acca440af413",
+    "miicloud_person_id": "19b38661-7941-484c-82f6-81ea85172e0e",
     "customer_person_id": "5712f5242cf956c7c1d248e89",
-    "first_name": "John", 
-    "last_name": "Doe", 
-    "email": "john_doe_2@domain.com", 
-    "phone": "+12222222222", 
+    "first_name": "John",
+    "last_name": "Doe",
+    "email": "john_doe_2@domain.com",
+    "phone": "+12222222222",
+    "images": [
+        {
+            "image": "https://mc-enroll-images.s3.amazonaws.com/media/enroll/will_smith_003_EusaSSY.jpg",
+            "created": "2019-04-06T17:49:05.550801Z"
+        },
+        {
+            "image": "https://mc-enroll-images.s3.amazonaws.com/media/enroll/will_smith_002_OxCrHWz.jpg",
+            "created": "2019-04-06T17:45:43.458062Z"
+        }   
+    ],
     "bounding_box": {
-        "left_x": 118, 
-        "left_y": 77, 
-        "right_x": 305, 
+        "left_x": 35,
+        "left_y": 77,
+        "right_x": 222,
         "right_y": 264
-        }, 
-    "image": "enroll/will_smith_002_zktkkgN.jpg"
+    }
 }
 
 ```
+>Successfull HTTP status code = 200
 
 ### Sandbox API Endpoint
 `PUT https://sandbox.miicloud.io/miicloud/person`
@@ -243,6 +258,9 @@ first_name | No | new or existing first name associated with the person
 last_name | No | new or existing last name associated with the person
 email | No | new or existing email associated with the person
 phone | No | new or existing phone # associated with the person
+images | No | array of images associated with the person.  For security reasons, these images cannot be downloaded from the Person's profile
+image | No | file name 
+created | No | timestamp of when the image was enrolled by the customer
 bounding_box | No | an object with bounding box coordinates around the face (if a new image pass passed in with the Person's face)
 left_x | No | x-coordinate of the bounding box’s top left corner 
 left_ y | No | y-coordinate of the bounding box’s top left corner
@@ -262,9 +280,9 @@ import requests
 auth_token = 'Token 0e653da4969a757d21de0ffa6387d5fbd6401131'
 api_endpoint = 'https://sandbox.miicloud.io/miicloud/person
 
-payload = {'customer_person_id': '5712f5242cf956c7c1d248e89'}
+customer_person_id = 5712f5242cf956c7c1d248e89
 
-response = requests.get(api_endpoint, headers={'Authorization': auth_token}, data = payload)
+response = requests.get(api_endpoint + '/' + customer_person_id, headers={'Authorization': auth_token})
 
 ```
 
@@ -297,6 +315,7 @@ https://sandbox.miicloud.io/miicloud/person/5712f5242cf956c7c1d248e89 \
 }
 
 ```
+>Successfull HTTP status code = 200
 
 Returns all the profile information associated with the person, such as their name, email, and the images used to enroll their identinty.  
 
@@ -342,9 +361,9 @@ import requests
 auth_token = 'Token 0e653da4969a757d21de0ffa6387d5fbd6401131'
 api_endpoint = 'https://sandbox.miicloud.io/miicloud/person
 
-payload = {'customer_person_id': '5712f5242cf956c7c1d248e89'}
+customer_person_id = 5712f5242cf956c7c1d248e89
 
-response = requests.delete(api_endpoint, headers={'Authorization': auth_token}, data = payload)
+response = requests.delete(api_endpoint + '/' + customer_person_id, headers={'Authorization': auth_token})
 
 ```
 
@@ -364,6 +383,7 @@ https://sandbox.miicloud.io/miicloud/person/5712f5242cf956c7c1d248e89 \
 }
 
 ```
+>Successfull HTTP status code = 200
 
 Deletes the person record all information associated with it. 
 
@@ -455,6 +475,7 @@ https://sandbox.miicloud.io/miicloud/match_faces \
 }
 
 ```
+>Successfull HTTP status code = 200
 
 Matches the faces in a given image against the faces in the database for one or more matches.  
 
@@ -471,7 +492,7 @@ Parameter | Required | Description
 --------- | ------- | -----------
 authorization | Yes | a unique api token per miiCloud customer
 image_path | Yes | local or remote destination of the image accessible by your application
-customer_person_id | No | unique identifer of a person.  This field should be populated if you want to match the input image only agains this peron's enrolled images.
+customer_person_id | No | unique identifer of a person.  This field should be used to conduct a 1:1 verify, meaning if you would like to compared this specific person's enrolled image(s) against the input image.  If this parameter is not passed, miiCloud conducts a 1:many search and compares the faces in the input image against its database for potential matches.
 
 ### Response
 
