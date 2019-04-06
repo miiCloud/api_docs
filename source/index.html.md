@@ -10,6 +10,7 @@ toc_footers:
   - <a href='https://github.com/lord/slate'>Docs Powered by Slate</a>
 
 includes:
+  - sample_code
   - errors
   
   
