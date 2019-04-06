@@ -246,6 +246,17 @@
               </ul>
           </li>
           <li>
+            <a href="#sample-code" class="toc-h1 toc-link" data-title="Sample Code">Sample Code</a>
+              <ul class="toc-list-h2">
+                  <li>
+                    <a href="#docker" class="toc-h2 toc-link" data-title="Docker">Docker</a>
+                  </li>
+                  <li>
+                    <a href="#public-repo" class="toc-h2 toc-link" data-title="Public Repo">Public Repo</a>
+                  </li>
+              </ul>
+          </li>
+          <li>
             <a href="#errors" class="toc-h1 toc-link" data-title="Errors">Errors</a>
           </li>
       </ul>
@@ -1045,6 +1056,23 @@ https://sandbox.miicloud.io/miicloud/match_faces <span class="se">\</span>
 ===============================================
 ===============================================
 ----------->
+<p>language_tabs:
+- shell</p>
+<h1 id='sample-code'>Sample Code</h1><h3 id='docker'>Docker</h3><pre class="highlight shell tab-shell"><code>
+docker pull miicloud/sandbox:v0.1.2
+docker run miicloud/sandbox:v0.1.2
+
+</code></pre>
+<p>You can access the docker container with all the relevant Python based libraries such as: 
+<code>opencv-python==3.4.0.12
+imutils
+requests
+</code></p>
+<h3 id='public-repo'>Public Repo</h3><pre class="highlight shell tab-shell"><code>git clone https://github.com/miiCloud/sandbox_api_test
+</code></pre>
+<p>To facilitate the testing of miiCloud’s API, we have provided sample test files and python code.  It can downloaded from our <a href="https://github.com/miiCloud/sandbox_api_test">public github repo.</a></p>
+
+<p><code>git clone https://github.com/miiCloud/sandbox_api_test</code></p>
 <h1 id='errors'>Errors</h1>
 <p>miiCloud API uses the following error codes.  Please contact dev@miicloud.io if you experience any issues.</p>
 
